@@ -1,0 +1,97 @@
+#%RAML 1.0
+title: playerClub
+
+types:
+  Player: !include datatype/PlayerDataType.raml
+  Clubs: !include datatype/ClubDataType.raml
+
+/players:
+  get:
+    description: To retrieve all the players from the database
+    responses:
+      200:
+        body:
+          application/json:
+            type: Player[]
+            example: !include example/playerExample.raml
+  post:
+    description: To add a player to the database
+    body:
+      application/json:
+        type: !include datatype/PlayerDataType.raml
+        example: !include example/playerNoIDExample.raml
+    
+    responses:
+      201:
+        body:
+          application/json:
+            example:
+              message: "Player Created ( but not really )"
+
+  put:
+    description: To update a player in the database
+    body:
+      application/json:
+        type: !include datatype/PlayerDataType.raml
+        example: !include example/playerNoIDExample.raml
+    
+    responses:
+      200:
+        body:
+          application/json:
+            example:
+              message: "Player Updated ( but not really )"
+
+  delete:
+    responses:
+      200:
+        body:
+          application/json:
+            example:
+              message: "Player Deleted ( but not really )"
+    
+
+/clubs:
+  get:
+    description: To retrieve all the Clubs from the database
+    responses:
+      200:
+        body:
+          application/json:
+            type: Clubs
+            example: !include example/clubExample.raml
+  post:
+    description: To add a club to the database
+    body:
+      application/json:
+        type: !include datatype/ClubDataType.raml
+        example: !include example/clubExample.raml
+    
+    responses:
+      201:
+        body:
+          application/json:
+            example:
+              message: "Club Created ( but not really )"
+
+  put:
+    description: To update a player in the database
+    body:
+      application/json:
+        type: !include datatype/ClubDataType.raml
+        example: !include example/clubExample.raml
+    
+    responses:
+      200:
+        body:
+          application/json:
+            example:
+              message: "Club Updated ( but not really )"
+
+  delete:
+    responses:
+      200:
+        body:
+          application/json:
+            example:
+              message: "Club Deleted ( but not really )"

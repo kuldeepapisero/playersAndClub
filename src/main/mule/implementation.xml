@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:spring="http://www.mulesoft.org/schema/mule/spring" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/spring http://www.mulesoft.org/schema/mule/spring/current/mule-spring.xsd">
+	
+	
+	
+	<flow name="getAllClubs" doc:id="46b0a817-1d42-4f52-ad5f-53cf012db9bc" >
+		<db:select doc:name="Select" doc:id="66c9eba9-1a6e-4a0b-b666-1c111fd3faef" config-ref="Database_Config">
+			<db:sql >SELECT * FROM club</db:sql>
+		</db:select>
+		<ee:transform doc:name="Transform Message" doc:id="6fb7cf0a-8523-4f40-b94c-ee43fa92240c" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="2cebb6b5-9145-4a70-8c85-2cb2254cbed1" message="#[payload]"/>
+	</flow>
+	<flow name="getAllPlayers" doc:id="7cdf05dd-eb34-43b6-bb91-effb4104f3cf" >
+		<db:select doc:name="getAllPlayers" doc:id="c0b84e47-4e4e-4df0-8d63-4ebedb69b86b" config-ref="Database_Config">
+			<db:sql >SELECT * FROM player</db:sql>
+		</db:select>
+		<ee:transform doc:name="Transform Message" doc:id="7615eaf5-c81e-4be1-af65-b3f9bcb045b6" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="0ef1e437-2f45-4d26-ba07-a009f3cda15f" message="#[payload]"/>
+	</flow>
+	<flow name="addClub" doc:id="4e4c01a9-d0d9-4c74-954b-a6ea83e1d2ed" >
+		<ee:transform doc:name="Transform Message" doc:id="f2012969-d52d-4064-9cc7-14c1fb5db659" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<db:insert doc:name="Insert" doc:id="46285c65-0a24-489d-8b51-8db559f1e032" config-ref="Database_Config">
+			<db:sql >INSERT INTO club(clubName, clubCountry)
+VALUES (:name, :country)</db:sql>
+			<db:input-parameters ><![CDATA[#[{name: payload.clubName, country: payload.clubCountry}]]]></db:input-parameters>
+		</db:insert>
+		<logger level="INFO" doc:name="Logger" doc:id="6aae5008-4ed1-4b1d-8b62-21abbf39a32a" message='#["Data inserted"]'/>
+	</flow>
+	<flow name="addPlayers" doc:id="dae7ba8f-283a-4281-9e9d-140dfc78a7b0" >
+		<ee:transform doc:name="Transform Message" doc:id="06e6bc13-0e52-49fc-877d-bfbd556cad01" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<db:insert doc:name="Insert" doc:id="8f0fda18-2554-4038-9c04-bd4ece94bd9c" config-ref="Database_Config">
+			<db:sql >INSERT INTO player(playerid, playername, playercountry,playerclub)
+VALUES (:id,:name,:country,:club)</db:sql>
+			<db:input-parameters ><![CDATA[#[{id: payload.playerID, name: payload.playerName, country: payload.playerCountry, club: payload.playerClub}]]]></db:input-parameters>
+		</db:insert>
+		<logger level="INFO" doc:name="Logger" doc:id="33031b16-23b5-4e25-b20c-c2ec1afbd665" message='#["Data Inserted"]'/>
+	</flow>
+	<flow name="updatePlayer" doc:id="073f20fe-df06-4155-a259-73a8ad4d9b9b" >
+		<ee:transform doc:name="Transform Message" doc:id="06dbd94a-c68f-498f-bd09-2e83892af0ca" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<db:update doc:name="Update" doc:id="33f5633f-e58f-49a7-a9e3-474d7025363d" config-ref="Database_Config">
+			<db:sql >UPDATE player
+SET playerName = :name , playerCountry= :country
+WHERE playerClub= :club
+
+</db:sql>
+			<db:input-parameters ><![CDATA[#[{club: payload.playerClub, name: payload.playerName , country: payload.playerCountry}]]]></db:input-parameters>
+		</db:update>
+		<logger level="INFO" doc:name="Logger" doc:id="8cdd2499-532d-43fe-81dc-22bd952c29e9" message='#["Data updated"]'/>
+	</flow>
+	<flow name="updateClub" doc:id="73ee08eb-64a4-4d2c-aab8-4b8d4362ef8f" >
+		<ee:transform doc:name="Transform Message" doc:id="486609d3-e772-4339-82db-1ca9811c5518" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<db:update doc:name="Update" doc:id="a28894ab-546e-4c7f-98b0-dd293b1f8ca7" config-ref="Database_Config">
+			<db:sql >UPDATE CLUB
+SET clubCountry = :country
+WHERE clubName = :name
+</db:sql>
+			<db:input-parameters ><![CDATA[#[{country: payload.clubCountry, name: payload.clubName}]]]></db:input-parameters>
+		</db:update>
+		<logger level="INFO" doc:name="Logger" doc:id="7346db90-5d4c-46b9-8302-ae67a7ef8883" message='#["Data updated"]'/>
+	</flow>
+	<flow name="deleteClub" doc:id="34edcfd6-c578-43c4-bc6a-1574ea0f0e62" >
+		<ee:transform doc:name="Transform Message" doc:id="b763e0c4-53ed-43f4-92a7-8e6050972ac4" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<db:delete doc:name="Delete" doc:id="4b531e93-f366-4801-942c-f217472ad7be" config-ref="Database_Config">
+			<db:sql >Delete from club
+where clubName = :name</db:sql>
+			<db:input-parameters ><![CDATA[#[{name: payload.clubName}]]]></db:input-parameters>
+		</db:delete>
+		<set-payload value='#["Data Deleted"]' doc:name="Set Payload" doc:id="390a1e8a-ea19-4699-80c5-11de096add58" />
+		<logger level="INFO" doc:name="Logger" doc:id="fc8a26ef-b3bc-4766-ae6c-ed81d0a56f7b" message='#[payload]'/>
+	</flow>
+	<flow name="deletePlayer" doc:id="0e6f4349-a4bd-4bfe-b8de-95681211722c" >
+		<ee:transform doc:name="Transform Message" doc:id="fa005b93-e376-4690-bf98-be67aa765133" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<db:delete doc:name="Delete" doc:id="055a9fa0-249c-489c-858d-c31875959457" config-ref="Database_Config">
+			<db:sql >Delete from player
+where playerClub = :club</db:sql>
+			<db:input-parameters ><![CDATA[#[{club: payload.playerClub}]]]></db:input-parameters>
+		</db:delete>
+		<set-payload value='#["Data Deleted"]' doc:name="Set Payload" doc:id="fa972ec8-681e-489f-a636-e399c39bacc8" />
+		<logger level="INFO" doc:name="Logger" doc:id="282f3b62-24ea-495f-9924-ab547702c866" />
+	</flow>
+</mule>
